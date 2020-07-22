@@ -2,11 +2,7 @@
 """
 Created on Sun Nov 10 11:02:32 2019
 
-Multi Data Type Pipeline using RandomForestClassifier to predict 'Category' 
-field in Mint Transaction - Daily data
-
-Note: OneVsRestClassifier with LogisticRegression & KNeighborsClassifier 
-    yields lower accuracy score & Account Name column lowers accuracy score
+Multi Data Type Pipeline using RandomForestClassifier to predict 'Category' field in Financial transaction data
     
 Steps:
     1. Import modules
@@ -18,56 +14,6 @@ Steps:
 
 @author: HM
 """
-
-""" #NOTE: SparseInteraction function below not used in program b/c it slows down
-#computation
-#from itertools import combinations
-#
-#import numpy as np
-#from scipy import sparse
-#from sklearn.base import BaseEstimator, TransformerMixin
-#
-#class SparseInteractions(BaseEstimator, TransformerMixin):
-#    def __init__(self, degree=2, feature_name_separator="_"):
-#        self.degree = degree
-#        self.feature_name_separator = feature_name_separator
-#
-#    def fit(self, X, y=None):
-#        return self
-#
-#    def transform(self, X):
-#        if not sparse.isspmatrix_csc(X):
-#            X = sparse.csc_matrix(X)
-#
-#        if hasattr(X, "columns"):
-#            self.orig_col_names = X.columns
-#        else:
-#            self.orig_col_names = np.array([str(i) for i in range(X.shape[1])])
-#
-#        spi = self._create_sparse_interactions(X)
-#        return spi
-#
-#    def get_feature_names(self):
-#        return self.feature_names
-#
-#    def _create_sparse_interactions(self, X):
-#        out_mat = []
-#        self.feature_names = self.orig_col_names.tolist()
-#
-#        for sub_degree in range(2, self.degree + 1):
-#            for col_ixs in combinations(range(X.shape[1]), sub_degree):
-#                # add name for new column
-#                name = self.feature_name_separator.join(self.orig_col_names[list(col_ixs)])
-#                self.feature_names.append(name)
-#
-#                # get column multiplications value
-#                out = X[:, col_ixs[0]]
-#                for j in col_ixs[1:]:
-#                    out = out.multiply(X[:, j])
-#
-#                out_mat.append(out)
-#
-#        return sparse.hstack([X] + out_mat)"""
 
 # Import necessary modules
 import os, pandas as pd, datetime, numpy as np
@@ -83,9 +29,9 @@ import warnings
 warnings.filterwarnings(action='ignore')
 
 # Changes current working directory to where Transaction file is stored
-os.chdir('C:\\Users\\User\\Documents\\Python Scripts\\Machine Learning\\Mint\\Data\\')
+os.chdir("FILE PATH HERE")
 
-table = pd.read_csv('Mint Transactions - Daily.csv')
+table = pd.read_csv("FILE NAME HERE")
 
 X_data = table[['$ Amount', 'Description']]
 Y_data = table['Category']
@@ -125,8 +71,6 @@ process_and_join_features = FeatureUnion(
 # Instantiate nested pipeline: pl
 pl = Pipeline([
         ('union', process_and_join_features),
-#        NOTE: SparseInteractions above slows down model computation
-#        ('int', SparseInteractions(degree=2)),
 #       NOTE: Standard Scalar imported to reduce large variances in data inputs
         ('scaler', StandardScaler(with_mean=False)),
         ('clf', RandomForestClassifier())
@@ -157,10 +101,7 @@ print(cv.best_params_)
 print('\n')
 print(classification_report(y_test, y_pred))
 
-
-
-# --** CREATES EXCEL SPREADSHEET WITH PREDICTIONS FROM MODEL **--
-
+# --** BELOW CREATES EXCEL SPREADSHEET WITH PREDICTIONS FROM MODEL **--
 
 # Creates Pandas DataFrame of test data with model prediction column
 results = pd.DataFrame(X_test)
@@ -172,9 +113,7 @@ results = results.join(Y_data)
 # Creates new Category Classifier Model Prediction spreadsheet and puts in folder
 date = datetime.datetime.today().strftime('%m-%d-%Y')
 
-file_name = 'C:\\Users\\User\\Documents\\Python Scripts\\Machine Learning\\' \
-            'Prediction History\\Category Classifier Prediction History\\' + date + \
-            ' Category Classifier Model Prediction.xlsx'
+file_name = "FILE LOCATION AND NAME TEMPLATE HERE"
 
 try:
     results.to_excel(file_name)
