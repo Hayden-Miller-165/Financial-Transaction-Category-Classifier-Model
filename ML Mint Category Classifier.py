@@ -36,24 +36,24 @@ table = pd.read_csv("FILE NAME HERE")
 X_data = table[['$ Amount', 'Description']]
 Y_data = table['Category']
 
-# Split using ALL data in transaction table to categorize 'Category' field in data
+# Splits using ALL data in transaction table to categorize 'Category' field in data
 X_train, X_test, y_train, y_test = train_test_split(X_data,
                                                     Y_data,
                                                     test_size=0.2,
                                                     random_state=22)
 
 
-# Create the basic token pattern
+# Creates the basic token pattern
 # NOTE: Text tokens in vectorizer below decreases accuracy score
 TOKENS_BASIC = '\\S+(?=\\s+)'
 
-# Obtain the text data: get_text_data
+# Obtains the text data
 get_text_data1 = FunctionTransformer(lambda x: x['Description'], validate=False)
 
-# Obtain the numeric data: get_numeric_data
+# Obtains the numeric data
 get_numeric_data = FunctionTransformer(lambda x: x[['$ Amount']], validate=False)
 
-# Create a FeatureUnion with nested pipeline: process_and_join_features
+# Creates a FeatureUnion with nested pipeline
 # NOTE: ngram_range used to go up to 4 n grams for vectorizing text
 process_and_join_features = FeatureUnion(
             transformer_list = [
@@ -68,7 +68,7 @@ process_and_join_features = FeatureUnion(
             ]
         )
 
-# Instantiate nested pipeline: pl
+# Instantiates nested pipeline
 pl = Pipeline([
         ('union', process_and_join_features),
 #       NOTE: Standard Scalar imported to reduce large variances in data inputs
@@ -76,17 +76,17 @@ pl = Pipeline([
         ('clf', RandomForestClassifier())
     ])
 
-# Create parameters variable for GridSearchCV function to be used
+# Creates parameters variable for GridSearchCV function to be used
 parameters = {'clf__n_estimators':np.arange(1,5)}
 
-# Use GridSearchCV to find parameters which make model most accurate
+# Use GridSearchCV to find parameters with highest accuracy score
 cv = GridSearchCV(pl, param_grid=parameters)
 
-# Fit cv to the training data
+# Fits cv to the training data
 cv.fit(X_data, Y_data)
 y_pred = cv.predict(X_test)
 
-# Compute and print accuracy
+# Computes and prints accuracy
 accuracy = cv.score(X_test, y_test)
 print("\nAccuracy on test data: {:.1%}\n".format(accuracy))
 
@@ -96,7 +96,7 @@ print('\nCV scores: {}'.format(cv_scores))
 print('\nCV score mean: {:.1%}'.format(np.mean(cv_scores)))
 print('\n')
 
-# Prints best parameters and classifcation report by each Category within Target Variable
+# Prints best parameters and classification report by each Category within Target Variable
 print(cv.best_params_)
 print('\n')
 print(classification_report(y_test, y_pred))
