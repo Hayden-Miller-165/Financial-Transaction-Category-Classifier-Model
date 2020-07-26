@@ -1,5 +1,5 @@
 # Financial-Transaction-Category-Classifier-Model
-Machine Learning algorithm using the Random Forest Classifier to predict 'Category' field in Financial Transaction data
+Machine Learning algorithm using the Random Forest Classifier to predict 'Category' field in Financial Transaction data.  ECDF visual program provided to gain additional insight on data before starting the modeling process.
 
 # Program uses the following packages: os, pandas, datetime, numpy, sklearn
 
